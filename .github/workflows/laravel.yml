@@ -42,6 +42,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
     - name: Install PHP and Composer
       uses: shivammathur/setup-php@v2
       with:
