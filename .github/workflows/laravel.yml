@@ -56,7 +56,7 @@ jobs:
           node_modules/
           vendor/
         method: ftp # Méthode de déploiement (ftp ou ftps)
-        
+
     - name: Add SSH key
       uses: webfactory/ssh-agent@v0.5.4
       with:
