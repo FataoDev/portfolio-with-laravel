@@ -50,8 +50,6 @@ jobs:
       with:
         php-version: '8.2'
 
-    - name: Install Dependencies
-      run: composer install --no-dev --prefer-dist --no-scripts
 
     - name: Generate key
       run: php artisan key:generate --force
@@ -68,3 +66,12 @@ jobs:
         local-dir: ./ # Dossier local à déployer
         server-dir: / # Dossier sur le serveur cPanel où le site doit être déployé
         # method: ftp # Méthode de déploiement (ftp ou ftps)
+        exclude: |
+          .git*
+          node_modules/
+          vendor/
+        method: ftp # Méthode de déploiement (ftp ou ftps)
+
+    - name: Install Composer Dependencies on cPanel
+      run: |
+        ssh ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_SERVER }} "cd /test.acd.bf && php composer.phar install --no-dev --prefer-dist"
