@@ -42,6 +42,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install PHP and Composer
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Install Dependencies
+      run: composer install --no-dev --prefer-dist --no-scripts
+
+    - name: Generate key
+      run: php artisan key:generate --force
+
+    - name: Set Directory Permissions
+      run: chmod -R 777 storage bootstrap/cache
+
     - name: Setup FTP for cPanel
       uses: SamKirkland/FTP-Deploy-Action@v4.2.0
       with:
@@ -49,4 +63,5 @@ jobs:
         username: ${{ secrets.CPANEL_USERNAME }} # Nom d'utilisateur FTP
         password: ${{ secrets.CPANEL_PASSWORD }} # Mot de passe FTP
         local-dir: ./ # Dossier local à déployer
-        server-dir: /test.acd.bf/ # Dossier sur le serveur cPanel où le site doit être déployé
+        server-dir: / # Dossier sur le serveur cPanel où le site doit être déployé
+        # method: ftp # Méthode de déploiement (ftp ou ftps)
