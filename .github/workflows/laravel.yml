@@ -71,6 +71,14 @@ jobs:
           node_modules/
           vendor/
         method: ftp # Méthode de déploiement (ftp ou ftps)
+        
+    - name: Add SSH key
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+    
+    - name: Add server to known_hosts
+      run: ssh-keyscan -H ${{ secrets.CPANEL_SERVER }} >> ~/.ssh/known_hosts
 
     - name: Install Composer Dependencies on cPanel
       run: |
