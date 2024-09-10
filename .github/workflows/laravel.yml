@@ -71,7 +71,7 @@ jobs:
           node_modules/
           vendor/
         method: ftp # Méthode de déploiement (ftp ou ftps)
-        
+
     - name: Add SSH key
       uses: webfactory/ssh-agent@v0.5.4
       with:
@@ -81,5 +81,5 @@ jobs:
       run: ssh-keyscan -H ${{ secrets.CPANEL_SERVER }} >> ~/.ssh/known_hosts
 
     - name: Install Composer Dependencies on cPanel
-      run: |
-        ssh ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_SERVER }} "cd /test.acd.bf && php composer.phar install --no-dev --prefer-dist"
+      run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_SERVER }} "cd /test.acd.bf && php composer.phar install --no-dev --prefer-dist"
+    
