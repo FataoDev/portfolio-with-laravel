@@ -49,4 +49,22 @@ jobs:
         username: ${{ secrets.CPANEL_USERNAME }} # Nom d'utilisateur FTP
         password: ${{ secrets.CPANEL_PASSWORD }} # Mot de passe FTP
         local-dir: ./ # Dossier local à déployer
-        server-dir: /test.acd.bf/ # Dossier sur le serveur cPanel où le site doit être déployé
+        server-dir: / # Dossier sur le serveur cPanel où le site doit être déployé
+        # method: ftp # Méthode de déploiement (ftp ou ftps)
+        exclude: |
+          .git*
+          node_modules/
+          vendor/
+        method: ftp # Méthode de déploiement (ftp ou ftps)
+        
+    - name: Add SSH key
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+    
+    - name: Add server to known_hosts
+      run: ssh-keyscan -H ${{ secrets.CPANEL_SERVER }} >> ~/.ssh/known_hosts
+
+    - name: Install Composer Dependencies on cPanel
+      run: ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_SERVER }} "cd /test.acd.bf && php composer.phar install --no-dev --prefer-dist"
+      
