@@ -1,4 +1,4 @@
-name: Laravel
+name: Laravel CI/CD
 
 on:
   push:
@@ -8,18 +8,17 @@ on:
 
 jobs:
   laravel-tests:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+    - uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
     - uses: actions/checkout@v4
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Update Dependencies
-      run : composer update
+      run: composer update
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Generate key
@@ -35,3 +34,19 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: php artisan test
+
+  deploy:
+    needs: laravel-tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup FTP for cPanel
+      uses: SamKirkland/FTP-Deploy-Action@v4.2.0
+      with:
+        server: ${{ secrets.CPANEL_SERVER }} # Adresse de votre serveur FTP
+        username: ${{ secrets.CPANEL_USERNAME }} # Nom d'utilisateur FTP
+        password: ${{ secrets.CPANEL_PASSWORD }} # Mot de passe FTP
+        local-dir: ./ # Dossier local à déployer
+        server-dir: /test.acd.bf/ # Dossier sur le serveur cPanel où le site doit être déployé
